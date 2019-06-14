@@ -1,0 +1,15 @@
+**/.project
+**/.classpath
+**/.metadata
+**/.settings
+**/target
+**/.svn
+**/*.tmp
+**/*.bak
+**/*.swp
+**/*.iml
+**/*.idea
+*.exe
+./vscode/*
+tmp
+temp
