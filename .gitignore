@@ -11,6 +11,6 @@
 **/*.idea
 *.exe
 .vscode/**
-.vscode/*
+.vscode/*.json
 tmp
 temp
