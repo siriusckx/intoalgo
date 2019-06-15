@@ -10,6 +10,6 @@
 **/*.iml
 **/*.idea
 *.exe
-.vscode/*
+.vscode/**
 tmp
 temp
