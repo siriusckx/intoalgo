@@ -241,3 +241,24 @@ ListNode *listIndex(LinkedList *list, long index)
     }
     return pNode;
 }
+
+LinkedList *listRewind(LinkedList *list)
+{
+    if(NULL ==  list)
+    {
+        return list;
+    }
+
+    ListNode *head = list->head;
+    ListNode *pre = NULL;
+    ListNode *next = NULL;
+    while (NULL != head)
+    {
+        next = head->next;
+        head->next = pre;
+        pre = head;
+        head = next;
+    }
+    list->head = pre;
+    return list;
+}

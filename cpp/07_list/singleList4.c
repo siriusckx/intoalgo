@@ -1,4 +1,4 @@
-#include "singleList3.h"
+#include "singleList4.h"
 
 LinkedList *listCreate()
 {
@@ -8,21 +8,19 @@ LinkedList *listCreate()
     {
         return NULL;
     }
-
     list->dup = NULL;
     list->free = NULL;
     list->match = NULL;
     list->head = NULL;
     list->len = 0;
-
     return list;
 }
 
-void *listRelease(LinkedList *list)
+void listRelease(LinkedList *list)
 {
-    if(NULL == list)
+    if (NULL == list)
     {
-        return ;
+        return;
     }
 
     listEmpty(list);
@@ -32,36 +30,34 @@ void *listRelease(LinkedList *list)
     list = NULL;
 }
 
-void *listEmpty(LinkedList *list)
+void listEmpty(LinkedList *list)
 {
     if (NULL == list)
     {
         return;
     }
 
-
     while (NULL != list->head)
     {
-        ListNode *node = list->head;
-        list->head = node->next;
+        ListNode *pNode = list->head;
+        list->head = pNode->next;
         if(NULL != list->free)
         {
-            list->free(node->value);
+            list->free(pNode->value);
         }
         else
         {
-            free(node->value);
+            free(pNode->value);
         }
-
-        node->next = NULL;
-        free(node);
-        node = NULL;
+        pNode->next = NULL;
+        free(pNode);
+        pNode = NULL;
     }
 }
 
 LinkedList *listAddNodeHead(LinkedList *list, void *value)
 {
-    if(NULL == list || NULL == value)
+    if(NULL == list || NULL ==value)
     {
         return list;
     }
@@ -72,8 +68,8 @@ LinkedList *listAddNodeHead(LinkedList *list, void *value)
     {
         return list;
     }
-
     node->value = value;
+
     node->next = list->head;
     list->head = node;
     ++list->len;
@@ -81,40 +77,40 @@ LinkedList *listAddNodeHead(LinkedList *list, void *value)
     return list;
 }
 
+
 LinkedList *listAddNodeTail(LinkedList *list, void *value)
 {
-    if(NULL == list || NULL == value)
+    if(NULL == list || NULL ==  value)
     {
         return list;
     }
-
     ListNode *node = NULL;
-    node = malloc(sizeof(*node));
-    if(NULL ==  node)
+    if(NULL == node)
     {
         return list;
     }
-
     node->value = value;
+    node->next = NULL;
 
-    if(NULL == list->head || list->len == 0)
+    if(NULL == list->head && list->len == 0)
     {
         list->head = node;
-        node->next = NULL;
     }
     else
     {
         ListNode *tail = list->head;
         ListNode *pre = list->head;
-        while (NULL != tail->next)
+        while (NULL != tail)
         {
             pre = tail;
             tail = tail->next;
         }
-        pre->next = node;
+        if(NULL != pre)
+        {
+            pre->next = node;
+        }
+        ++list->len;
     }
-
-    ++list->len;
     return list;
 }
 
@@ -131,11 +127,9 @@ LinkedList *listInsertNode(LinkedList *list, ListNode *oldNode, void *value, boo
     {
         return list;
     }
-
-    node->next = NULL;
-    node->value = value;
     if(after)
     {
+        node->next = oldNode->next;
         oldNode->next = node;
     }
     else
@@ -152,12 +146,11 @@ LinkedList *listInsertNode(LinkedList *list, ListNode *oldNode, void *value, boo
             node->next = oldNode;
         }
     }
-
     ++list->len;
+
     return list;
 }
 
-//没设置释放函数时不做释放处理
 void listDelNode(LinkedList *list, ListNode *node)
 {
     if(NULL == list || NULL == node)
@@ -193,32 +186,30 @@ void listDelNode(LinkedList *list, ListNode *node)
 
 ListNode *listSearchKey(LinkedList *list, void *key)
 {
-    if(NULL == list)
+    if(NULL == list || NULL == key)
     {
         return NULL;
     }
 
-    ListNode *node = list->head;
-    while (NULL != node)
+    ListNode *cur = list->head;
+    while (NULL != cur)
     {
         if(NULL != list->match)
         {
-            if(list->match(key, node->value) == 0)
+            if(list->match(key, cur->value) == 0)
             {
-                return node;
+                return cur;
             }
         }
         else
         {
-            if(key == node->value)
+            if (cur->value == key)
             {
-                return node;
+                return cur;
             }
         }
-
-        node = node->next;
+        cur = cur->next;
     }
-
     return NULL;
 }
 
@@ -229,20 +220,20 @@ ListNode *listIndex(LinkedList *list, long index)
         return NULL;
     }
 
-    if(index <= 0 || index >list->len)
+    if(index <= 0 || index > list->len)
     {
         return NULL;
     }
 
-    ListNode *pNode = list->head;
+    ListNode *node = list->head;
     for (long i = 0; i < index; i++)
     {
-        pNode = pNode->next;
+        node = node->next;
     }
-    return pNode;
+    return node;
 }
 
-LinkedList *listRewind(LinkedList *list)
+LinkedList *listReWind(LinkedList *list)
 {
     if(NULL == list)
     {
@@ -252,7 +243,6 @@ LinkedList *listRewind(LinkedList *list)
     ListNode *head = list->head;
     ListNode *pre = NULL;
     ListNode *next = NULL;
-
     while (NULL != head)
     {
         next = head->next;
@@ -260,6 +250,31 @@ LinkedList *listRewind(LinkedList *list)
         pre = head;
         head = next;
     }
+
     list->head = pre;
     return list;
 }
+
+size_t listLength(LinkedList *list)
+{
+    if(NULL == list)
+    {
+        return 0;
+    }
+    return list->len;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
