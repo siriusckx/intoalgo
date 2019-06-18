@@ -27,17 +27,17 @@ namespace intoalgo
         SingleList *addTail(T *value);
         SingleList *insert(SingleListNode<T> *oldNode, T *value, bool after);
 
-        SingleList *delHead(T *value);
-        SingleList *delTail(T *value);
+        SingleList *delHead();
+        SingleList *delTail();
         SingleList *delKey(T *value);
         SingleList *delIndex(long index);
 
-        SingleListNode *find(T *value);
-        SingleListNode *find(long index);
+        SingleListNode<T> *find(T *value);
+        SingleListNode<T> *find(long index);
 
-        SingleListNode *head();
-        SingleListNode *tail();
-        SingleListNode *next();
+        SingleListNode<T> *begin();
+        SingleListNode<T> *end();
+        SingleListNode<T> *next();
         long size();
 
         SingleList *reverse();
@@ -52,14 +52,13 @@ namespace intoalgo
     };
     
     template<typename T>
-    SingleList<T>::SingleList()
+    SingleList<T>::SingleList():head(nullptr),sentinel(nullptr),maxsize(0),len(0)
     {
     }
 
     template<typename T>
-    SingleList<T>::SingleList(long maxSize)
+    SingleList<T>::SingleList(long maxSize):head(nullptr),sentinel(nullptr),maxSize(maxSize),len(0)
     {
-
     }
     
     template<typename T>
@@ -70,37 +69,142 @@ namespace intoalgo
     template<typename T>
     SingleList<T> * SingleList<T>::addHead(T *value)
     {
-        return shared_from_this;
+        SingleListNode<T> *pNode = new SingleListNode();
+        pNode->value = value;
+        pNode->next = this->head;
+        this->head = pNode;
+
+        ++this->len;
+
+        return this;
     }
 
     template<typename T>
     SingleList<T> * SingleList<T>::addTail(T *value)
     {
-        return shared_from_this;
+        SingleListNode<T> *pNode = new SingleListNode();
+        pNode->value = value;
+        pNode->next = nullptr;
+
+        if(nullptr == this->head && this->len == 0)
+        {
+            this->head = pNode;
+        }
+        else
+        {
+            SingleListNode<T> *pre = this->head;
+            while (nullptr != pre->next)
+            {
+                pre = pre->next;
+            }
+            pre->next = pNode;
+        }
+        ++this->len;
+
+        return this;
     }
 
     template<typename T>
     SingleList<T> *SingleList<T>::insert(SingleListNode<T> *oldNode, T *value, bool after)
     {
-        return shared_from_this;
+        if(nullptr == oldNode || nullptr == value)
+        {
+            return this;
+        }
+
+        SingleListNode<T> *pNode = new SingleListNode();
+        pNode->value = value;
+        
+        if(after)
+        {
+            pNode->next = oldNode->next;
+            oldNode->next = pNode->next;
+        }
+        else
+        {
+            SingleListNode<T> *pre = this->head;
+            while (pre->next != oldNode)
+            {
+                pre = pre->next;
+            }
+
+            pNode->next = oldNode;
+            pre->next = pNode;
+        }
+        ++this->len;
+
+        return this;
     }
 
     template<typename T>
-    SingleList<T> * SingleList<T>::delHead(T *value)
+    SingleList<T> * SingleList<T>::delHead()
     {
-        return shared_from_this;
+        if(this->len == 0)
+        {
+            return this;
+        }
+        SingleListNode<T> *pNode = this->head;
+        this->head = this->head->next;
+        //TODO 释放pNode中value的对象
+        delete (pNode);
+        pNode = nullptr;
+        --this->len;
+        return this;
     }
 
     template<typename T>
-    SingleList<T> * SingleList<T>::delTail(T *value)
+    SingleList<T> * SingleList<T>::delTail()
     {
-        return shared_from_this;
+        if(this->len == 0)
+        {
+            return this;
+        }
+        SingleListNode *pre= this->head;
+        SingleListNode *tail = this->head;
+        while (nullptr != tail->next)
+        {
+            pre = tail;
+            tail = tail->next;
+        }
+
+        pre->next = nullptr;
+
+        //TODO 释放尾结点对应value的内存
+        delete (tail);
+        tail = nullptr;
+        --this->len;
+
+        return this;
     }
 
     template<typename T>
     SingleList<T> * SingleList<T>::delKey(T *value)
     {
-        return shared_from_this;
+        if(nullptr == value)
+        {
+            return this;
+        }
+
+        SingleListNode<T> *pre = this->head;
+        SingleListNode<T> *cur = this->head;
+        while (nullptr != cur && cur->value != value)
+        {
+            pre = cur;
+            cur = cur->next;
+        }
+        
+        //说明value在链表中
+        if(nullptr != cur)
+        {
+            pre->next = cur->next;
+            
+            //TODO 根据设计情况，对应节点的值要进行释放
+            cur->next = nullptr;
+            delete (cur);
+            cur = nullptr;
+            --this->len;
+        }
+        return this;
     }
         
     template<typename T>
@@ -112,43 +216,70 @@ namespace intoalgo
     template<typename T>
     SingleListNode<T> * SingleList<T>::find(T *value)
     {
-        return shared_from_this;
+        return NULL;
     }
 
     template<typename T>
     SingleListNode<T> * SingleList<T>::find(long index)
     {
-        return shared_from_this;
+        return NULL;
     }
 
-    template<typename T>
-    SingleListNode<T> * SingleList<T>::head()
-    {
-        return nullptr;
-    }
 
     template<typename T>
-    SingleListNode<T> * SingleList<T>::tail()
+    SingleListNode<T> * SingleList<T>::begin()
     {
-        return nullptr;
+        return this->head;
+    }
+    
+
+    template<typename T>
+    SingleListNode<T> * SingleList<T>::end()
+    {
+        SingleListNode *pNode = this->head;
+        while (nullPtr != pNode->next)
+        {
+            pNode = pNode->next;
+        }
+        
+        return pNode;
     }
 
     template<typename T>
     SingleListNode<T> * SingleList<T>::next()
     {
-        return nullptr;
+        if(nullptr == this->sentinel)
+        {
+            this->sentinel = this->head;
+        }
+        else
+        {
+            this->sentinel = this->sentinel->next;
+        }
+        return this->sentinel;
     }
 
     template<typename T>
     long SingleList<T>::size()
     {
-        return 0;
+        return this->len;
     }
 
     template<typename T>
     SingleList<T> * SingleList<T>::reverse()
     {
-        return shared_from_this;
+        SingleListNode *head = this->head;
+        SingleListNode *pre = nullptr;
+        SingleListNode *next = nullptr;
+        while (nullptr != head)
+        {
+            next = head->next;
+            head->next = pre;
+            pre = head;
+            head = next;
+        }
+        
+        return this;
     }
 
     template<typename T>
@@ -163,4 +294,4 @@ namespace intoalgo
         return false;
     }
 }
-#endif
+#endif //!__SINGLELIST_H__
