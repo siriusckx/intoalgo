@@ -210,19 +210,60 @@ namespace intoalgo
     template<typename T>
     SingleList<T> * SingleList<T>::delIndex(long index)
     {
-        return shared_from_this;
+        if(index <=0 || index > this->len)
+        {
+            return this;
+        }
+
+        SingleListNode<T> *pre = this->head;
+        SingleListNode<T> *cur = this->head;
+        for (long i = 0; i < index; ++i)
+        {
+            pre = cur;
+            cur = cur->next;
+        }
+        pre->next = pre->next->next;
+
+        //TODO 删除cur节点对应的内存
+        cur->value = nullptr;
+        delete(cur);
+        cur = nullptr;
+
+        --this->len;
+        return this;
     }
 
     template<typename T>
     SingleListNode<T> * SingleList<T>::find(T *value)
     {
-        return NULL;
+        SingleListNode<T> *pNode = this->head;
+        while (nullptr != pNode->next)
+        {
+            if(pNode->value == value)
+            {
+                return pNode;
+                break;
+            }
+            pNode = pNode->next;
+        }
+        
+        return nullptr;
     }
 
     template<typename T>
     SingleListNode<T> * SingleList<T>::find(long index)
     {
-        return NULL;
+        if(index <= 0 || index > this->len)
+        {
+            return nullptr;
+        }
+
+        SingleListNode<T> *pNode = this->head;
+        for (long i = 0; i < index; i++)
+        {
+            pNode = pNode->next;
+        }
+        return pNode;
     }
 
 
@@ -285,7 +326,16 @@ namespace intoalgo
     template<typename T>
     void SingleList<T>::clear()
     {
-
+        while (nullptr != this->head)
+        {
+            SingleListNode<T> *pNode = this->head;
+            this->head = this->head->next;
+            //TODO 释放每个节点中对应的value值
+            pNode->next = nullptr;
+            free(pNode);
+            pNode = nullptr;
+            --this->len;
+        }
     }
 
     template<typename T>
