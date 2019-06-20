@@ -20,6 +20,7 @@ namespace intoalgo
         {
             T data;
             LinkedNode *next;
+            LinkedNode() : data(NULL), next(NULL){}
         };
         LinkedNode *head; //单链表的头指针，不带头节点
     };

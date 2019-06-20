@@ -42,7 +42,6 @@ namespace intoalgo
 
     }
 
-    //这儿要注意，栈中的元素本身是否需要手动释放内存？
     template<class T>
     void ArrayStack<T>::push(T data)
     {
